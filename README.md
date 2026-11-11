@@ -27,6 +27,27 @@ Ubuntu (apt). Реализован на Python 3 без внешних зави�
 
 При запуске все параметры выводятся в формате `ключ=значение`.
 
+### Этап 2: сбор данных
+
+Приложение скачивает индекс пакетов репозитория Ubuntu (файл `Packages`,
+`Packages.gz` или `Packages.xz`), находит запись заданной версии пакета
+и выводит его прямые зависимости (поля `Pre-Depends` и `Depends`).
+Менеджеры пакетов и сторонние библиотеки не используются: загрузка
+выполняется через `urllib`, разбор индекса и зависимостей реализован
+вручную.
+
+Опция `-r` принимает:
+
+- корень архива (`http://archive.ubuntu.com/ubuntu`) — используется
+  индекс `dists/jammy/main/binary-amd64/Packages.gz`;
+- прямую ссылку на индекс, оканчивающуюся на `Packages`, `Packages.gz`
+  или `Packages.xz`, — для других выпусков и разделов.
+
+Альтернативы выводятся через `|`, зависимости из `Pre-Depends`
+помечаются `[Pre-Depends]`. Коды завершения: 0 — успех, 1 — ошибка
+получения данных (сеть, пакет или версия не найдены), 2 — ошибка
+параметров.
+
 ## Сборка и запуск тестов
 
 Сборка не требуется.
@@ -45,6 +66,8 @@ python3 src/main.py -p A -r fixtures/simple.txt -t
 
 ## Примеры использования
 
+### Этап 1
+
 ```
 $ python3 src/main.py -p curl -r http://archive.ubuntu.com/ubuntu \
       --package-version 7.81.0-1ubuntu1 -a -d 3
@@ -62,4 +85,20 @@ $ python3 src/main.py -p Bad_Name -r archive -o g.png -d 0
 ошибка: версия пакета обязательна вне тестового режима
 ошибка: файл изображения 'g.png' должен иметь расширение .svg
 ошибка: максимальная глубина должна быть не меньше 1
+```
+
+### Этап 2
+
+```
+$ python3 src/main.py -p curl -r http://archive.ubuntu.com/ubuntu \
+      --package-version 7.81.0-1
+Загрузка индекса: http://archive.ubuntu.com/ubuntu/dists/jammy/main/binary-amd64/Packages.gz
+Прямые зависимости пакета curl 7.81.0-1:
+  libc6 (>= 2.34)
+  libcurl4 (= 7.81.0-1)
+  zlib1g (>= 1:1.1.4)
+
+$ python3 src/main.py -p curl -r http://archive.ubuntu.com/ubuntu \
+      --package-version 7.81.0-1ubuntu1
+ошибка: версия '7.81.0-1ubuntu1' пакета 'curl' не найдена; доступные версии: 7.81.0-1
 ```
