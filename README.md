@@ -64,6 +64,16 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 python3 src/main.py -p A -r fixtures/simple.txt -t
 ```
 
+## Скрипты ручной проверки
+
+Запускаются из любого каталога, показывают команду и код завершения:
+
+```bash
+bash scripts/valid/stage2.sh      # корректные запуски
+bash scripts/valid/stage2_apt_compare.sh  # cверка со штатным apt
+bash scripts/invalid/stage2.sh    # ошибки параметров
+```
+
 ## Примеры использования
 
 ### Этап 1
