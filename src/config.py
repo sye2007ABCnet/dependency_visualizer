@@ -147,7 +147,7 @@ def build_config(namespace):
     )
 
 
-class _ArgumentParser(argparse.ArgumentParser):
+class ArgumentParser(argparse.ArgumentParser):
     """Парсер, сообщающий об ошибке через ConfigError."""
 
     def error(self, message):
@@ -157,7 +157,7 @@ class _ArgumentParser(argparse.ArgumentParser):
 
 def _create_parser():
     """Описывает все опции командной строки."""
-    parser = _ArgumentParser(
+    parser = ArgumentParser(
         prog="main.py",
         description="Визуализация графа зависимостей пакетов Ubuntu.",
     )
