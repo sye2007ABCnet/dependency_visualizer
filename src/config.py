@@ -9,10 +9,9 @@
 import argparse
 import os
 import re
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from urllib.parse import urlparse
 
-from dasbus import namespace
 
 DEFAULT_OUTPUT = "graph.svg"
 DEFAULT_MAX_DEPTH = 5
@@ -44,14 +43,6 @@ class Config:
     output: str
     ascii_tree: bool
     max_depth: int
-
-    def as_key_value(self):
-        """Возвращает все параметры в формате "ключ=значение"."""
-        lines = []
-        for field in fields(self):
-            value = getattr(self, field.name)
-            lines.append(f"{field.name}={'' if value is None else value}")
-        return "\n".join(lines)
 
 
 def _check_package(name, test_mode):
