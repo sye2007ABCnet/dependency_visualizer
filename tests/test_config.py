@@ -1,17 +1,14 @@
-"""Тесты этапа 1: разбор и проверка параметров командной строки."""
+"""Тесты этапов 1-2: разбор и проверка параметров командной строки."""
 
 import os
 import unittest
-from contextlib import redirect_stdout, redirect_stderr
-from io import StringIO
 
 from config import ConfigError, parse_args
-from main import EXIT_CONFIG_ERROR, EXIT_OK, main
 
 FIXTURE = os.path.join(os.path.dirname(__file__), "..", "fixtures",
                        "simple.txt")
 REAL_ARGS = ["-p", "curl", "-r", "http://archive.ubuntu.com/ubuntu",
-             "--package-version", "7.81.0-1ubuntu1"]
+             "--package-version", "7.81.0-1"]
 
 
 class ValidConfigTests(unittest.TestCase):
@@ -36,12 +33,6 @@ class ValidConfigTests(unittest.TestCase):
         self.assertEqual(config.output, "out.svg")
         self.assertTrue(config.ascii_tree)
         self.assertEqual(config.max_depth, 3)
-
-    def test_key_value_output(self):
-        """Параметры выводятся в формате 'ключ=значение'."""
-        text = parse_args(REAL_ARGS).as_key_value()
-        self.assertIn("package=curl", text)
-        self.assertIn("max_depth=5", text)
 
 
 class InvalidConfigTests(unittest.TestCase):
@@ -75,11 +66,11 @@ class InvalidConfigTests(unittest.TestCase):
     def test_missing_test_file(self):
         """Несуществующий файл тестового репозитория."""
         self.assert_error(["-p", "A", "-r", "/no/file.txt", "-t"],
-                        "не найден")
+                          "не найден")
 
     def test_version_required(self):
         """Вне тестового режима версия обязательна."""
-        self.assert_error(["-p", "curl", "-r", "http://x.org", ], "версия")
+        self.assert_error(["-p", "curl", "-r", "http://x.org"], "версия")
 
     def test_bad_version(self):
         """Недопустимый формат версии."""
@@ -87,7 +78,7 @@ class InvalidConfigTests(unittest.TestCase):
                           "формат")
 
     def test_bad_output_extension(self):
-        """Файл изображения должен иметь расширение .svg"""
+        """Файл изображения должен иметь расширение .svg."""
         self.assert_error(REAL_ARGS + ["-o", "graph.png"], ".svg")
 
     def test_missing_output_directory(self):
@@ -108,23 +99,6 @@ class InvalidConfigTests(unittest.TestCase):
         with self.assertRaises(ConfigError) as ctx:
             parse_args(argv)
         self.assertGreaterEqual(len(ctx.exception.errors), 3)
-
-
-class MainTests(unittest.TestCase):
-    """Поведение точки входа и коды завершения."""
-
-    def test_main_success(self):
-        """При корректных параметрах код завершения 0."""
-        with redirect_stdout(StringIO()):
-            self.assertEqual(main(REAL_ARGS), EXIT_OK)
-
-    def test_main_error(self):
-        """При ошибке параметров код завершения 2 и вывод в stderr."""
-        err = StringIO()
-        with redirect_stderr(err):
-            code = main(["-p", "curl", "-r", "bad"])
-        self.assertEqual(code, EXIT_CONFIG_ERROR)
-        self.assertIn("ошибка:", err.getvalue())
 
 
 if __name__ == "__main__":

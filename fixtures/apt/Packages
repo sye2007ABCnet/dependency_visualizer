@@ -1,0 +1,42 @@
+Package: curl
+Architecture: amd64
+Version: 7.81.0-1
+Section: web
+Depends: libc6 (>= 2.34), libcurl4 (= 7.81.0-1), zlib1g (>= 1:1.1.4)
+Description: command line tool for transferring data with URL syntax
+ curl is a command line tool for transferring data with URL syntax.
+
+Package: curl
+Architecture: amd64
+Version: 7.81.0-1ubuntu1.30
+Section: web
+Depends: libc6 (>= 2.34), libcurl4 (= 7.81.0-1ubuntu1.30), zlib1g (>= 1:1.1.4)
+Description: command line tool for transferring data with URL syntax
+
+Package: git
+Architecture: amd64
+Version: 1:2.34.1-1ubuntu1
+Section: vcs
+Depends: libc6 (>= 2.34), libcurl3-gnutls (>= 7.56.1), perl, git-man (>> 1:2.34.1), git-man (<< 1:2.34.1-.)
+Description: fast, scalable, distributed revision control system
+
+Package: python3
+Architecture: amd64
+Version: 3.10.4-0ubuntu2
+Section: python
+Pre-Depends: python3-minimal (= 3.10.4-0ubuntu2)
+Depends: python3.10 (>= 3.10.4-1~), libpython3-stdlib (= 3.10.4-0ubuntu2)
+Description: interactive high-level object-oriented language (default version)
+
+Package: debconf-utils
+Architecture: all
+Version: 1.5.79ubuntu1
+Section: devel
+Depends: debconf (>= 1.5.79ubuntu1) | debconf-2.0
+Description: debconf utilities
+
+Package: libc6
+Architecture: amd64
+Version: 2.35-0ubuntu3
+Section: libs
+Description: GNU C Library: Shared libraries
