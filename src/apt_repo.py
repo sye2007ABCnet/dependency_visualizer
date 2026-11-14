@@ -104,21 +104,35 @@ def iter_stanzas(text):
         yield _parse_stanza(lines)
 
 
-def find_package(text, name, version):
-    """Ищет в индексе запись пакета с заданным именем и версией.
+def build_package_table(text):
+    """Возвращает словарь: имя пакета -> список его записей в индексе."""
+    table = {}
+    for stanza in iter_stanzas(text):
+        name = stanza.get("Package")
+        if name:
+            table.setdefault(name, []).append(stanza)
+    return table
 
-    Бросает RepositoryError, если пакета нет или нет нужной версии;
+
+def select_stanza(stanzas, name, version):
+    """Выбирает среди записей пакета запись нужной версии.
+
+    Бросает RepositoryError, если записей нет или нет нужной версии;
     во втором случае в сообщении перечислены доступные версии.
     """
-    versions = []
-    for stanza in iter_stanzas(text):
-        if stanza.get("Package") != name:
-            continue
+    for stanza in stanzas:
         if stanza.get("Version") == version:
             return stanza
-        versions.append(stanza.get("Version", "?"))
-    if not versions:
+    if not stanzas:
         raise RepositoryError(f"пакет '{name}' не найден в репозитории")
+    versions = ", ".join(stanza.get("Version", "?") for stanza in stanzas)
     raise RepositoryError(
         f"версия '{version}' пакета '{name}' не найдена; "
-        f"доступные версии: {', '.join(versions)}")
+        f"доступные версии: {versions}"
+    )
+
+
+def find_package(text, name, version):
+    """Ищет в индексе запись пакета с заданным именем и версией."""
+    table = build_package_table(text)
+    return select_stanza(table.get(name, []), name, version)
