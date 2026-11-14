@@ -11,7 +11,7 @@ Package: b
 Version: 2.0
 
 Package: a
-Version 1.1
+Version: 1.1
 """
 
 
