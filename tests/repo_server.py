@@ -12,6 +12,18 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 FIXTURE_INDEX = os.path.join(os.path.dirname(__file__), "..", "fixtures",
                              "apt", "Packages")
 INDEX_DIR = "dists/jammy/main/binary-amd64"
+LOCAL_HOSTS = "127.0.0.1,localhost"
+
+
+def bypass_proxy_for_localhost():
+    """Исключает локальные адреса из прокси: тестовый сервер локальный."""
+    current = os.environ.get("no_proxy") or os.environ.get("NO_PROXY", "")
+    hosts = ",".join(filter(None, [current, LOCAL_HOSTS]))
+    os.environ["no_proxy"] = hosts
+    os.environ["NO_PROXY"] = hosts
+
+
+bypass_proxy_for_localhost()
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
