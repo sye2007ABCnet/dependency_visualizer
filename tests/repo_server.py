@@ -14,7 +14,7 @@ FIXTURE_INDEX = os.path.join(os.path.dirname(__file__), "..", "fixtures",
 INDEX_DIR = "dists/jammy/main/binary-amd64"
 
 
-class _QuietHandler(SimpleHTTPRequestHandler):
+class QuietHandler(SimpleHTTPRequestHandler):
     """Обработчик запросов, не печатающий журнал в консоль."""
 
     def log_message(self, *args):
@@ -38,7 +38,7 @@ class RepoServer:
         self._write(index_dir, "Packages.gz", gzip.compress(data))
         self._write(index_dir, "Packages.xz", lzma.compress(data))
         self._write(self._root, "broken/Packages.gz", b"not gzip")
-        handler = functools.partial(_QuietHandler, directory=self._root)
+        handler = functools.partial(QuietHandler, directory=self._root)
         self._server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
         threading.Thread(target=self._server.serve_forever,
                          daemon=True).start()
