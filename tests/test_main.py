@@ -79,6 +79,15 @@ class AptModeTests(unittest.TestCase):
         self.assertIn("(максимальная глубина: 1)", out)
         self.assertIn("Пакетов в графе: 4", out)
 
+    def test_load_order_for_apt_package(self):
+        """Порядок загрузки выводится и для репозитория Ubuntu."""
+        _, out, _ = self.run_package("curl", "7.81.0-1ubuntu1.30")
+        self.assertIn(
+            "  1. libc6\n  2. libcurl4 [нет в репозитории]\n"
+            "  3. zlib1g [нет в репозитории]\n  4. curl",
+            out,
+        )
+
     def test_unknown_version(self):
         """Неизвестная версия — код 1 и список доступных версий."""
         code, _, err = self.run_package("curl", "1.0")
@@ -170,6 +179,32 @@ class TestModeTests(unittest.TestCase):
         code, _, err = run_main(["-p", "A", "-r", path, "-t"])
         self.assertEqual(code, EXIT_DATA_ERROR)
         self.assertIn("строка 2", err)
+
+    def test_load_order_is_printed(self):
+        """После графа выводится порядок загрузки: зависимости раньше."""
+        _, out, _ = self.run_test_mode("layers.txt")
+        self.assertIn(
+            "Порядок загрузки зависимостей пакета A:\n"
+            "  1. I\n  2. E\n  3. F\n  4. B\n  5. G\n"
+            "  6. C\n  7. H\n  8. D\n  9. A",
+            out,
+        )
+
+    def test_load_order_with_cycle(self):
+        """Цикл не мешает порядку загрузки, пропущенное ребро указано."""
+        _, out, _ = self.run_test_mode("cycle.txt")
+        self.assertIn("  1. C\n  2. B\n  3. A", out)
+        self.assertIn("Рёбра, пропущенные из-за циклов (1):\n  C -> A", out)
+
+    def test_load_order_marks_unknown(self):
+        """В порядке загрузки отсутствующий пакет помечен."""
+        _, out, _ = self.run_test_mode("unknown.txt")
+        self.assertIn("  2. X [нет в репозитории]", out)
+
+    def test_load_order_is_incomplete_with_depth(self):
+        """Ограничение глубины делает порядок неполным."""
+        _, out, _ = self.run_test_mode("chain.txt", "-d", "2")
+        self.assertIn("Порядок неполный", out)
 
     def test_config_error(self):
         """Ошибка параметров — код 2."""
