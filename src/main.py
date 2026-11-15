@@ -1,10 +1,10 @@
 """
 Инструмент визуализации графа зависимостей пакетов Ubuntu (apt).
 
-Этап 3: основные операции. Приложение строит граф зависимостей пакета
-с учётом транзитивности обходом в глубину без рекурсии и выводит его.
-Учитываются максимальная глубина анализа и циклические зависимости.
-В тестовом режиме граф читается из текстового файла.
+Этап 4: дополнительные операции. Приложение строит граф зависимостей
+пакета обходом в глубину без рекурсии, выводит его и порядок загрузки
+зависимостей. Учитываются максимальная глубина анализа и циклические
+зависимости. В тестовом режиме граф читается из текстового файла.
 """
 
 import sys
@@ -13,6 +13,7 @@ from apt_repo import RepositoryError, build_index_url, fetch_index
 from config import ConfigError, parse_args
 from dependencies import DependencyParseError
 from graph import build_graph, format_graph
+from order import build_load_order, format_load_order
 from sources import AptSource, FileSource, load_test_repository
 
 EXIT_OK = 0
@@ -45,6 +46,8 @@ def main(argv=None):
         print(f"ошибка: {exc}", file=sys.stderr)
         return EXIT_DATA_ERROR
     print(format_graph(graph, config.max_depth))
+    print()
+    print(format_load_order(build_load_order(graph), graph))
     return EXIT_OK
 
 
