@@ -8,7 +8,6 @@ AptSource берёт зависимости из индекса пакетов U
 
 from apt_repo import (
     RepositoryError,
-    build_index_url,
     select_stanza,
     build_package_table
 )

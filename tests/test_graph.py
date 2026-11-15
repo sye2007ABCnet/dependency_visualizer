@@ -13,7 +13,7 @@ class DictSource:
 
     def __init__(self, packages):
         """Запоминает словарь «пакет -> кортеж зависимостей»."""
-        self.packages = packages
+        self._packages = packages
 
     def dependencies(self, name):
         """Возвращает зависимости пакета или None, если пакета нет."""
@@ -39,7 +39,7 @@ class BuildGraphTests(unittest.TestCase):
     def test_order_is_depth_first(self):
         """Вершины перечисляются в порядке обхода в глубину."""
         graph = graph_of({"A": ("B", "C"), "B": ("D",)}, 5)
-        self.assertEqual(list(graph.edges), ["A", "B", "C", "D"])
+        self.assertEqual(list(graph.edges), ["A", "B", "D", "C"])
 
     def test_unreachable_packages_are_ignored(self):
         """Пакеты, недостижимые из корня, в граф не попадают."""

@@ -71,7 +71,7 @@ class GraphBuilder:
     def _enter(self, node, depth):
         """Входит в вершину: сохраняет её рёбра и кладёт на стек."""
         found = self._source.dependencies(node)
-        if found is not None:
+        if found is None:
             self._unknown.add(node)
         dependencies = found or ()
         expand = depth < self._max_depth
@@ -79,7 +79,7 @@ class GraphBuilder:
         self._edges[node] = dependencies if expand else ()
         if expand:
             self._truncated.discard(node)
-        else:
+        elif dependencies:
             self._truncated.add(node)
         self._iterators.append(iter(self._edges[node]))
 
