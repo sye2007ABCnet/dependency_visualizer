@@ -30,8 +30,9 @@ CONF
 export APT_CONFIG="$WORK/apt.conf"
 
 apt-get update > /dev/null || { echo "ошибка: apt update" >&2; exit 1; }
-VERSION="$(apt-cache policy "$PACKAGE" | awk '/Candidate:/ {print $2}')"
-if [ -z "$VERSION" ] || [ "$VERSION" = "(none)" ]; then
+VERSION="$(apt-cache show "$PACKAGE" 2> /dev/null \
+    | awk '/^Version:/ {print $2; exit}')"
+if [ -z "$VERSION" ]; then
     echo "ошибка: пакет '$PACKAGE' не найден в $CODENAME/main" >&2
     exit 1
 fi
