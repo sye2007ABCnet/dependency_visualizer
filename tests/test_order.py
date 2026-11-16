@@ -30,7 +30,7 @@ def order_of(packages, max_depth=BIG_DEPTH):
 class LoadOrderTests(unittest.TestCase):
     """Правильность порядка: зависимости идут раньше зависимых."""
 
-    DIAMOND = {"A": ("B", "C"), "B": ("D",), "C": ("D",), "D": ()}
+    diamond = {"A": ("B", "C"), "B": ("D",), "C": ("D",), "D": ()}
 
     def assert_dependencies_first(self, graph, order):
         """Проверяет, что каждая зависимость загружена до зависимого."""
@@ -42,13 +42,13 @@ class LoadOrderTests(unittest.TestCase):
 
     def test_diamond(self):
         """Общая зависимость загружается один раз и первой."""
-        _, order = order_of(self.DIAMOND)
+        _, order = order_of(self.diamond)
         self.assertEqual(order.packages, ("D", "B", "C", "A"))
         self.assertEqual(order.skipped, ())
 
     def test_requested_package_is_last(self):
         """Запрошенный пакет загружается последним."""
-        _, order = order_of(self.DIAMOND)
+        _, order = order_of(self.diamond)
         self.assertEqual(order.packages[-1], "A")
 
     def test_chain(self):
@@ -76,7 +76,7 @@ class LoadOrderTests(unittest.TestCase):
 
     def test_every_package_once(self):
         """Каждый пакет графа присутствует в порядке ровно один раз."""
-        graph, order = order_of(self.DIAMOND)
+        graph, order = order_of(self.diamond)
         self.assertEqual(len(order.packages), len(set(order.packages)))
         self.assertEqual(set(order.packages), set(graph.edges))
 
