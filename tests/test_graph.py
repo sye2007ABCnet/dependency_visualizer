@@ -65,24 +65,24 @@ class BuildGraphTests(unittest.TestCase):
 class MaxDepthTests(unittest.TestCase):
     """Ограничение глубины анализа."""
 
-    CHAIN = {"A": ("B",), "B": ("C",), "C": ("D",), "D": ()}
+    chain = {"A": ("B",), "B": ("C",), "C": ("D",), "D": ()}
 
     def test_depth_one_gives_direct_dependencies(self):
         """Глубина 1: корень и его прямые зависимости."""
-        graph = graph_of(self.CHAIN, 1)
+        graph = graph_of(self.chain, 1)
         self.assertEqual(list(graph.edges), ["A", "B"])
         self.assertEqual(graph.truncated, frozenset({"B"}))
 
     def test_depth_limits_the_graph(self):
         """Вершины глубже предела в граф не попадают."""
-        graph = graph_of(self.CHAIN, 2)
+        graph = graph_of(self.chain, 2)
         self.assertEqual(list(graph.edges), ["A", "B", "C"])
         self.assertEqual(graph.edges["C"], ())
         self.assertEqual(graph.truncated, frozenset({"C"}))
 
     def test_depth_larger_than_graph(self):
         """Если глубина больше графа, обрезанных вершин нет."""
-        graph = graph_of(self.CHAIN, 10)
+        graph = graph_of(self.chain, 10)
         self.assertEqual(len(graph.edges), 4)
         self.assertEqual(graph.truncated, frozenset())
 
